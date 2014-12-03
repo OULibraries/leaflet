@@ -26,6 +26,7 @@ function leaflet_field_formatter_info() {
           'initialZoom' => '',
           'minZoom' => 1,
           'maxZoom' => 19,
+          'scrollWheelZoom' => 1,
         ),
         'icon' => array(
           'iconUrl' => '',
@@ -353,6 +354,9 @@ function leaflet_apply_map_settings(&$map, &$features, $map_settings, $entity_ty
   if (isset($map_settings['zoom']['maxZoom']) && $map_settings['zoom']['maxZoom'] >= 0) {
     $map['settings']['maxZoom'] = strval($map_settings['zoom']['maxZoom']);
   }
+  if (isset($map_settings['zoom']['scrollWheelZoom']) && empty($map_settings['zoom']['scrollWheelZoom'])) {
+    $map['settings']['scrollWheelZoom'] = FALSE;
+  }
 
   $icon = 'none';
   if (isset($map_settings['icon']['iconType'])) {
@@ -453,16 +457,16 @@ function leaflet_token_replace(&$subject, $key, $data = array()) {
 
 /**
  * Helper function to standardize forms between views and field formatters.
- * 
+ *
  * $group - String
  *  The name of the group element to generate.
- * 
+ *
  * $settings - Array
  *  Current form settings (for defaults, etc)
- * 
+ *
  * $options - Array
  *  Special options needed for this form element, if necessary.
- * 
+ *
  * Return - A fully loaded form element.
  */
 function leaflet_form_elements($group, $settings, $options = NULL) {
@@ -538,6 +542,12 @@ function leaflet_form_elements($group, $settings, $options = NULL) {
         '#options' => $zoom_options,
         '#default_value' => isset($settings[$group]['maxZoom']) ? $settings[$group]['maxZoom'] : -1,
         '#element_validate' => array('leaflet_max_zoom_validate'),
+      );
+      $form_element['scrollWheelZoom'] = array(
+        '#title' => t('Scroll Wheel Zoom'),
+        '#description' => t('Allow map to be zoomed by using the mouse wheel.'),
+        '#type' => 'checkbox',
+        '#default_value' => $settings[$group]['scrollWheelZoom'],
       );
       break;
 
